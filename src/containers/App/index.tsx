@@ -1,11 +1,18 @@
-import React, { Suspense, useEffect, useRef } from 'react';
+import React, { Suspense, useEffect } from 'react';
 
 import { Canvas, useLoader } from 'react-three-fiber';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { OrbitControls, useCubeTextureLoader } from 'drei';
+import {
+  OrbitControls,
+  useCubeTextureLoader,
+  softShadows,
+  Plane,
+  Loader,
+} from 'drei';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
-import { SpotLight } from 'three';
+
+softShadows({});
 
 const Trophy = (props: JSX.IntrinsicElements['group']) => {
   const envMap = useCubeTextureLoader(
@@ -32,42 +39,39 @@ const Trophy = (props: JSX.IntrinsicElements['group']) => {
 };
 
 const Scene = () => {
-  const spotLightRef = useRef<SpotLight>();
-
-  // Shadow helper
-  // const { scene } = useThree();
-  // useEffect(() => {
-  //   if (spotLightRef.current && spotLightRef.current.shadow) {
-  //     const helper = new CameraHelper(spotLightRef.current.shadow.camera);
-  //     scene.add(helper);
-  //
-  //     console.log(spotLightRef.current.shadow.camera.near);
-  //     console.log(spotLightRef.current.shadow.camera.far);
-  //   }
-  // }, [scene, spotLightRef]);
-
   return (
     <>
       <pointLight position={[0, 5, 20]} intensity={0.1} />
-      <spotLight
-        ref={spotLightRef}
-        position={[3, 3, 3]}
-        penumbra={1}
+      <directionalLight
         castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-camera-far={10}
-        shadow-bias={-0.001}
+        position={[2.5, 12, 12]}
+        intensity={4}
+        shadow-bias={-0.0003}
+        color="hotpink"
       />
       <OrbitControls
         autoRotate
         enablePan={false}
         enableZoom={false}
-        minPolarAngle={Math.PI / 2 - 0.5}
-        maxPolarAngle={Math.PI / 2 + 0.5}
+        minPolarAngle={Math.PI / 2 - 0.35}
+        maxPolarAngle={Math.PI / 2 + 0.35}
       />
+
       <Suspense fallback={null}>
         <Trophy rotation-y={(Math.PI / 2) * 3} position-y={-2.5} />
+        <Plane
+          args={[100, 100]}
+          position-y={-2.5}
+          rotation-x={-Math.PI / 2}
+          receiveShadow
+        >
+          <meshStandardMaterial
+            attach="material"
+            color="hotpink"
+            metalness={1}
+            roughness={1}
+          />
+        </Plane>
       </Suspense>
     </>
   );
@@ -88,8 +92,10 @@ const App = () => {
           gl.setClearColor('hotpink');
         }}
       >
+        <fog attach="fog" args={['hotpink', 5, 15]} />
         <Scene />
       </Canvas>
+      <Loader {...({} as any)} />
       <Confetti width={width} height={height} />
     </>
   );
