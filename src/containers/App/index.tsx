@@ -2,17 +2,9 @@ import React, { Suspense, useEffect } from 'react';
 
 import { Canvas, useLoader } from 'react-three-fiber';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import {
-  OrbitControls,
-  useCubeTextureLoader,
-  softShadows,
-  Plane,
-  Loader,
-} from 'drei';
+import { OrbitControls, useCubeTextureLoader, Plane, Loader } from 'drei';
 import Confetti from 'react-confetti';
 import { useWindowSize } from 'react-use';
-
-softShadows({});
 
 const Trophy = (props: JSX.IntrinsicElements['group']) => {
   const envMap = useCubeTextureLoader(
@@ -46,6 +38,8 @@ const Scene = () => {
         castShadow
         position={[2.5, 12, 12]}
         intensity={4}
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
         shadow-bias={-0.0003}
         color="hotpink"
       />
